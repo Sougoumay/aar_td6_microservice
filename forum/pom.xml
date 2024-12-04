@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.example</groupId>
-    <artifactId>authentification</artifactId>
+    <artifactId>forum</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>authentification</name>
-    <description>authentification</description>
+    <name>forum</name>
+    <description>forum</description>
     <url/>
     <licenses>
         <license/>
@@ -46,6 +46,15 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -1,0 +1,73 @@
+POST localhost:8081/api/utilisateurs
+Content-Type: application/json
+
+{
+  "email": "demo-1230@etu.univ-orleans.fr",
+  "password" : "demo123"
+}
+
+> {%
+ client.global.set("etudiant_url", response.headers.valueOf("Location"));
+ client.global.set("etudiant_token", response.headers.valueOf("Authorization"));
+ client.test("Request Executed Succesfully", function () {
+     client.assert(response.status === 201, "Response Status is not 201")
+ })
+%}
+
+### Etudiant 2
+POST localhost:8081/api/utilisateurs
+Content-Type: application/json
+
+{
+  "email": "student-1230@etu.univ-orleans.fr",
+  "password" : "student123"
+}
+
+> {%
+    client.global.set("etudiant2_url", response.headers.valueOf("Location"));
+    client.global.set("etudiant2_token", response.headers.valueOf("Authorization"));
+    client.test("Request Executed Succesfully", function () {
+        client.assert(response.status === 201, "Response Status is not 201")
+    })
+%}
+
+### Enregistrer un enseignant
+POST localhost:8081/api/utilisateurs
+Content-Type: application/json
+
+{
+  "email": "teach-1230@univ-orleans.fr",
+  "password" : "teach123"
+}
+
+> {%
+    client.global.set("teacher_url", response.headers.valueOf("Location"));
+    client.global.set("teacher_token", response.headers.valueOf("Authorization"));
+    client.test("Request Executed Succesfully", function () {
+        client.assert(response.status === 201, "Response Status is not 201")
+    })
+%}
+
+### Etudiant pose une question
+POST localhost:8082/api/questions
+Content-Type: application/json
+Authorization: {{etudiant_token}}
+
+{
+  "libelleQuestion" : "Quelle est la meilleure méthode d'authentification pour un api REST"
+}
+
+> {%
+    client.global.set("question_url", response.headers.valueOf("Location"));
+    client.test("Request Executed Succesfully", function () {
+        client.assert(response.status === 201, "Response Status is not 201")
+    })
+%}
+
+### Toutes les questions
+GET localhost:8082/api/questions
+Authorization: {{etudiant_token}}
+
+### Voir la question d'un autre etudiant
+GET localhost:8082/api/questions/b69e9cd8-eb32-4484-8a18-c5fbe5de8c4f
+Authorization: {{etudiant2_token}}

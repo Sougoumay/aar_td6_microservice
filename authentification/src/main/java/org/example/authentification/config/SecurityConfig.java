@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,11 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Configuration
-@EnableGlobalMethodSecurity(
-        prePostEnabled = true,
-        securedEnabled = true,
-        jsr250Enabled = true)
-
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -52,9 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/utilisateurs").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                        .requestMatchers("/api/questions/**").hasRole(Role.ENSEIGNANT.name())
-                        .requestMatchers("/api/utilisateurs/**").hasRole(Role.ETUDIANT.name())
-                        .anyRequest().denyAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
@@ -128,9 +123,9 @@ public class SecurityConfig {
                     .issuer("self")
                     .issuedAt(now)
                     .expiresAt(now.plusSeconds(expiry))
-                    .subject(personne.getEmail())
+                    .subject(personne.getId()+"")
                     .claim("scope", scope)
-                    .claim("idUtilisateur",String.valueOf(personne.getIdUtilisateur()))
+                    .claim("email",personne.getEmail())
                     .build();
 
 

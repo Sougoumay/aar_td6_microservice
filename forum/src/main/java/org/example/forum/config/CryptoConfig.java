@@ -1,4 +1,4 @@
-package org.example.authentification.config;
+package org.example.forum.config;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;

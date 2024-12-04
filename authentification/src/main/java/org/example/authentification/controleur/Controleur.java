@@ -7,6 +7,8 @@ import org.example.authentification.facade.exceptions.UtilisateurInexistantExcep
 import org.example.authentification.modele.Utilisateur;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -42,7 +44,7 @@ public class Controleur {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         URI location = base.path("/api/utilisateurs/{idUtilisateur}")
-                .buildAndExpand(utilisateur.getIdUtilisateur())
+                .buildAndExpand(utilisateur.getId())
                 .toUri();
         return ResponseEntity.created(location).header("Authorization","Bearer "+genereToken.apply(utilisateur)).body(utilisateur);
     }
@@ -52,8 +54,8 @@ public class Controleur {
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
         try {
             Utilisateur utilisateur = facadeUtilisateurs.getUtilisateurByEmail(loginDTO.email());
-            if (passwordEncoder.matches(loginDTO.password(), utilisateur.getEncodedPassword())) {
-                return ResponseEntity.status(HttpStatus.CREATED).header("Authorization","Bearer "+genereToken.apply(utilisateur)).build();
+            if (passwordEncoder.matches(loginDTO.password(), utilisateur.getPassword())) {
+                return ResponseEntity.status(HttpStatus.OK).header("Authorization","Bearer "+genereToken.apply(utilisateur)).build();
             }
             else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -61,5 +63,14 @@ public class Controleur {
         } catch (UtilisateurInexistantException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @GetMapping("/utilisateur/{idUtilisateur}")
+    @PreAuthorize("#idUtilisateur == authentication.name || hasRole('ENSEIGNANT')")
+    public ResponseEntity<Utilisateur> getUtilisateurById(@PathVariable int idUtilisateur,
+                                                          Authentication authentication,
+                                                          UriComponentsBuilder base) {
+        long id = Long.parseLong(authentication.getName());
+        return null;
     }
 }
