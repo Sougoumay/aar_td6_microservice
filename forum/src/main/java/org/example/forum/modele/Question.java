@@ -1,15 +1,11 @@
 package org.example.forum.modele;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Data;
-
 import java.util.UUID;
 
 @Entity
-@Data
+
 public class Question {
 
     @Id
@@ -27,4 +23,16 @@ public class Question {
     }
 
     public Question() {}
+
+    public String getIdQuestion() {
+        return idQuestion;
+    }
+
+    public long getIdUtilisateur() {
+        return idUtilisateur;
+    }
+
+    public void setReponse(String reponse) {
+        this.reponse = reponse;
+    }
 }

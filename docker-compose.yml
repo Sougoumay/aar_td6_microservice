@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  discovery:
+    image: hashicorp/consul:latest
+    ports:
+      - 8500:8500
+
+  forum:
+    image: forum-microservices/forum
+    ports:
+      - 8082:8080
+    restart: always
+    environment:
+      - JAVA_TOOL_OPTIONS=-DCONSUL_HOST=discovery -DCONSUL_PORT=8500 -DDB_HOST=mysql_base_td6_forum -DDB_PORT=3306
+    depends_on:
+      - discovery
+      - mysql_base_td6_forum
+      - authentification
+
+  authentification:
+    image: forum-microservices/authentification
+    ports:
+      - 8081:8080
+    restart: always
+    environment:
+      - JAVA_TOOL_OPTIONS=-DCONSUL_HOST=discovery -DCONSUL_PORT=8500 -DDB_HOST=mysql_base_td6_auth -DDB_PORT=3306
+    depends_on:
+      - discovery
+      - mysql_base_td6_auth
+
+  gateway:
+    image: forum-microservices/api-gateway
+    ports:
+      - 8080:8080
+    environment:
+      - JAVA_TOOL_OPTIONS=-DCONSUL_HOST=discovery
+    depends_on:
+      - discovery
+
+  mysql_base_td6_auth:
+    image: mysql:latest
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: passwordtd6
+      MYSQL_USER: usertd6
+      MYSQL_PASSWORD: passwordtd6
+      MYSQL_DATABASE: basetd6auth
+
+  mysql_base_td6_forum:
+    image: mysql:latest
+    ports:
+      - 3308:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: passwordtd6
+      MYSQL_USER: usertd6
+      MYSQL_PASSWORD: passwordtd6
+      MYSQL_DATABASE: basetd6auth

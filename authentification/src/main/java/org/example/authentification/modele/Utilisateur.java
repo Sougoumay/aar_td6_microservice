@@ -1,11 +1,9 @@
 package org.example.authentification.modele;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.util.List;
 
-@Data
 @Entity
 public class Utilisateur {
 
@@ -34,6 +32,18 @@ public class Utilisateur {
             case "univ-orleans.fr" -> Role.ENSEIGNANT;
             default -> null;
         };
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public boolean verifierPassword(String motDePasse) {

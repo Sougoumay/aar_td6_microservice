@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Route pour le service d'authentification
+        - id: auth_route
+          uri: lb://authentification
+          predicates:
+            - Path=/api/login
+            - Path=/api/utilisateurs/**  # Match pour toutes les routes sous /api/utilisateurs
+          filters:
+            - PreserveHostHeader=true   # Conserve l'en-tête 'Host'
+
+        # Route pour le service des questions
+        - id: questions_route
+          uri: lb://forum
+          predicates:
+            - Path=/api/questions/**  # Match pour toutes les routes sous /api/questions
+          filters:
+            - PreserveHostHeader=true   # Conserve l'en-t�te 'Host'
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+
+    loadbalancer:
+      enabled: false
+server:
+  port: 8080
+
