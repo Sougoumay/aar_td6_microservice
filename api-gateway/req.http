@@ -1,4 +1,4 @@
-POST localhost:8080/api/utilisateurs
+POST http://localhost:8080/api/utilisateurs
 Content-Type: application/json
 
 {
@@ -22,3 +22,27 @@ Content-Type: application/json
   "email": "demo1@etu.univ-orleans.fr",
   "password" : "demo1"
 }
+
+### Etudiant pose une question
+POST localhost:8080/api/questions
+Content-Type: application/json
+Authorization: {{etudiant_token}}
+
+{
+  "libelleQuestion" : "Quelle est la meilleure méthode d'authentification pour un api REST"
+}
+
+> {%
+    client.global.set("question_url", response.headers.valueOf("Location"));
+    client.test("Request Executed Succesfully", function () {
+        client.assert(response.status === 201, "Response Status is not 201")
+    })
+%}
+
+### Toutes les questions
+GET localhost:8080/api/questions
+Authorization: {{etudiant_token}}
+
+### Voir la question d'un autre etudiant
+GET localhost:8080/api/questions/db06825f-60bf-41de-add0-522ed47190e3
+Authorization: {{etudiant_token}}

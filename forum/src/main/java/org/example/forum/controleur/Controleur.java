@@ -39,7 +39,7 @@ public class Controleur {
         long id = Long.parseLong(authentication.getName());
 
         Question question = facadeApplication.ajouterUneQuestion(id, libelleQuestion.libelleQuestion);
-        URI location = base.path("questions/{idQuestion}")
+        URI location = base.path("api/questions/{idQuestion}")
                 .buildAndExpand(question.getIdQuestion())
                 .toUri();
         return ResponseEntity.created(location).body(question);

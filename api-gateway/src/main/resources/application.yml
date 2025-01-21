@@ -8,10 +8,10 @@ spring:
         - id: auth_route
           uri: lb://authentification
           predicates:
-            - Path=/api/login
+#            - Path=/api/login
             - Path=/api/utilisateurs/**  # Match pour toutes les routes sous /api/utilisateurs
           filters:
-            - PreserveHostHeader=true   # Conserve l'en-tête 'Host'
+            - RewritePath=/(?<segment>/?.*), /$\{segment}
 
         # Route pour le service des questions
         - id: questions_route
@@ -19,13 +19,13 @@ spring:
           predicates:
             - Path=/api/questions/**  # Match pour toutes les routes sous /api/questions
           filters:
-            - PreserveHostHeader=true   # Conserve l'en-t�te 'Host'
+            - RewritePath=/(?<segment>/?.*), /$\{segment}
+      default-filters:
+        - PreserveHostHeader   # Conserve l'en-tête 'Host'
     consul:
       host: ${CONSUL_HOST:localhost}
       port: ${CONSUL_PORT:8500}
-
-    loadbalancer:
-      enabled: false
-server:
-  port: 8080
+      discovery:
+        enabled: true
+        register: true
 

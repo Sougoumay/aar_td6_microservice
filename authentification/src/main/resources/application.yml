@@ -3,7 +3,7 @@ spring:
     name: authentification
   data:
     jdbc:
-      dialect: h2
+      dialect: mysql
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -12,13 +12,16 @@ spring:
       mode: always
   cloud:
     consul:
+      discovery:
+        register: true
       host: ${CONSUL_HOST:localhost}
       port: ${CONSUL_PORT:8500}
-    loadbalancer:
-      enabled: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql_base_td6_auth:3306/basetd6auth
+    username: usertd6
+    password: passwordtd6
 
-server:
-  port: 8081
 
 
 mySecretKey : MySuperSecretKeyForJWTsguguofterdfyulioluktydfyiuofdtrsdfuliguydsrtfuftrsesj

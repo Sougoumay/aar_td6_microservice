@@ -12,13 +12,10 @@ spring:
       mode: always
   cloud:
     consul:
+      discovery:
+        register: true
       host: ${CONSUL_HOST:localhost}
       port: ${CONSUL_PORT:8500}
-    loadbalancer:
-      enabled: false
-
-server:
-  port: 8082
 
 mySecretKey : MySuperSecretKeyForJWTsguguofterdfyulioluktydfyiuofdtrsdfuliguydsrtfuftrsesj
 
