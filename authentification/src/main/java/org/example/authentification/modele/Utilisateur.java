@@ -9,7 +9,13 @@ public class Utilisateur {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String email;
+
+    private String nom;
+
+    private String prenom;
+
     private String password;
 
     @ElementCollection
@@ -18,9 +24,11 @@ public class Utilisateur {
 
     public Utilisateur() {}
 
-    public Utilisateur(String email, String password) {
+    public Utilisateur(String email, String password, String nom, String prenom) {
         this.email = email;
         this.password = password;
+        this.nom = nom;
+        this.prenom = prenom;
         roles = List.of(checkRole(email));
     }
 
@@ -46,8 +54,29 @@ public class Utilisateur {
         return password;
     }
 
+    public String getNom() {
+        return nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
     public boolean verifierPassword(String motDePasse) {
         return this.password.equals(motDePasse);
     }
 
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    @Override
+    public String toString() {
+        return "Utilisateur{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
 }

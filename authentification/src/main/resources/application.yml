@@ -3,24 +3,27 @@ spring:
     name: authentification
   data:
     jdbc:
-      dialect: mysql
+      dialect: h2
+#  data:
+#    jdbc:
+#      dialect: mysql
   jpa:
     hibernate:
       ddl-auto: create-drop
   sql:
     init:
       mode: always
-  cloud:
-    consul:
-      discovery:
-        register: true
-      host: ${CONSUL_HOST:localhost}
-      port: ${CONSUL_PORT:8500}
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql_base_td6_auth:3306/basetd6auth
-    username: usertd6
-    password: passwordtd6
+#  cloud:
+#    consul:
+#      discovery:
+#        register: true
+#      host: ${CONSUL_HOST:localhost}
+#      port: ${CONSUL_PORT:8500}
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://mysql_base_td6_auth:3306/basetd6auth
+#    username: usertd6
+#    password: passwordtd6
 
 
 
