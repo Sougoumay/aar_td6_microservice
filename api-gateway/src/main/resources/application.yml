@@ -5,11 +5,18 @@ spring:
     gateway:
       routes:
         # Route pour le service d'authentification
+        - id: users_route
+          uri: lb://authentification
+          predicates:
+            - Path=/api/utilisateurs/**  # Match pour toutes les routes sous /api/utilisateurs
+          filters:
+            - RewritePath=/(?<segment>/?.*), /$\{segment}
+
+        # Route pour le service d'authentification
         - id: auth_route
           uri: lb://authentification
           predicates:
-#            - Path=/api/login
-            - Path=/api/utilisateurs/**  # Match pour toutes les routes sous /api/utilisateurs
+            - Path=/api/login
           filters:
             - RewritePath=/(?<segment>/?.*), /$\{segment}
 

@@ -1,14 +1,13 @@
 package org.example.forum.controleur;
 
+import org.example.forum.exceptions.UtilisateurInexistantException;
 import org.example.forum.facades.FacadeApplication;
-import org.example.forum.facades.exceptions.AccessIllegalAUneQuestionException;
-import org.example.forum.facades.exceptions.QuestionInexistanteException;
+import org.example.forum.exceptions.QuestionInexistanteException;
 import org.example.forum.modele.Question;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -29,12 +28,13 @@ public class Controleur {
 
     record LibelleQuestion(String libelleQuestion) {}
 
+    record UtilisateurDTO(long id, String email) {}
+
     @PreAuthorize("hasRole('ETUDIANT')")
     @PostMapping("/questions")
     public ResponseEntity<Question> ajouterQuestion(@RequestBody LibelleQuestion libelleQuestion,
                                                     Authentication authentication,
-                                                    UriComponentsBuilder base)
-    {
+                                                    UriComponentsBuilder base) throws UtilisateurInexistantException {
 
         long id = Long.parseLong(authentication.getName());
 
@@ -57,8 +57,7 @@ public class Controleur {
 
     @GetMapping("/questions")
     public ResponseEntity<Collection<Question>> getSomeQuestionsByUtilisateur(@RequestParam Optional<String> filtre,
-                                                                              Authentication authentication)
-    {
+                                                                              Authentication authentication) throws UtilisateurInexistantException {
         long id = Long.parseLong(authentication.getName());
         String f = filtre.orElse("sansFiltre");
 
@@ -76,12 +75,11 @@ public class Controleur {
 
     @GetMapping("/questions/{idQuestion}")
     public ResponseEntity<Question> getQuestionByUtilisateur(@PathVariable String idQuestion,
-                                                             Authentication authentication)
-    {
+                                                             Authentication authentication) throws UtilisateurInexistantException {
         long id = Long.parseLong(authentication.getName());
-        Question question = facadeApplication.ajouterUneQuestion(id, idQuestion);
+        Question question = facadeApplication.getQuestionByIdForUser(id, idQuestion);
         boolean isEnseignant = authentication.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(",")).contains("ROLE_ENSEIGNANT");
-        if (question.getIdUtilisateur() == id || isEnseignant) {
+        if (question.getUtilisateur().getId() == id || isEnseignant) {
             return ResponseEntity.ok(question);
         } else
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
