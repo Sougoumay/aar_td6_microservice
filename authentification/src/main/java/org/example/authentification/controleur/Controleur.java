@@ -1,8 +1,10 @@
 package org.example.authentification.controleur;
 
 import org.example.authentification.controleur.dtos.LoginDTO;
+import org.example.authentification.controleur.dtos.RegisteredDTO;
 import org.example.authentification.controleur.dtos.UtilisateurDTO;
 import org.example.authentification.facade.FacadeUtilisateurs;
+import org.example.authentification.facade.RabbitMqSender;
 import org.example.authentification.facade.exceptions.LoginDejaUtiliseException;
 import org.example.authentification.facade.exceptions.UtilisateurInexistantException;
 import org.example.authentification.modele.Utilisateur;
@@ -24,18 +26,21 @@ public class Controleur {
 
     private final FacadeUtilisateurs facadeUtilisateurs;
 
+    private final RabbitMqSender rabbitMqSender;
+
     private final PasswordEncoder passwordEncoder;
 
     private final Function<Utilisateur, String> genereToken;
 
-    public Controleur(FacadeUtilisateurs facadeUtilisateurs, PasswordEncoder passwordEncoder, Function<Utilisateur, String> genereToken) {
+    public Controleur(FacadeUtilisateurs facadeUtilisateurs, RabbitMqSender rabbitMqSender, PasswordEncoder passwordEncoder, Function<Utilisateur, String> genereToken) {
         this.facadeUtilisateurs = facadeUtilisateurs;
+        this.rabbitMqSender = rabbitMqSender;
         this.passwordEncoder = passwordEncoder;
         this.genereToken = genereToken;
     }
 
     @PostMapping("/utilisateurs")
-    public ResponseEntity<Utilisateur> inscrire(@RequestBody UtilisateurDTO dto,
+    public ResponseEntity<Utilisateur> register(@RequestBody UtilisateurDTO dto,
                                                 UriComponentsBuilder base) {
         Utilisateur utilisateur;
         try {
@@ -46,6 +51,9 @@ public class Controleur {
         URI location = base.path("/api/utilisateurs/{idUtilisateur}")
                 .buildAndExpand(utilisateur.getId())
                 .toUri();
+        RegisteredDTO userRecord = new RegisteredDTO(utilisateur.getId(), utilisateur.getEmail());
+
+        rabbitMqSender.send(userRecord, true);
         return ResponseEntity.created(location).header("Authorization", "Bearer " + genereToken.apply(utilisateur)).body(utilisateur);
     }
 
@@ -84,8 +92,11 @@ public class Controleur {
                                             Authentication authentication) throws UtilisateurInexistantException {
         long id = Long.parseLong(authentication.getName());
         if (idUtilisateur == id) {
-            Utilisateur utilisateur = facadeUtilisateurs.desinscription(id);
-            System.out.println(utilisateur);
+//            Utilisateur utilisateur = facadeUtilisateurs.desinscription(id);
+//            System.out.println(utilisateur);
+            RegisteredDTO userRecord = facadeUtilisateurs.desinscription(id);
+
+            rabbitMqSender.send(userRecord, false);
             return ResponseEntity.ok("L'utilisateur est désinscrit avec succès");
         }
 

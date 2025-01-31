@@ -18,10 +18,12 @@ services:
       - CONSUL_PORT=8500
       - DB_HOST=mysql_base_td6_forum
       - DB_PORT=3306
+      - RABBITMQ_HOST=rabbitmq
     depends_on:
       - discovery
 #      - mysql_base_td6_forum
       - authentification
+      - rabbitmq
 
   authentification:
     image: forum-microservices/authentification
@@ -33,9 +35,13 @@ services:
       - CONSUL_PORT=8500
       - DB_HOST=mysql_base_td6_auth
       - DB_PORT=3306
+      - RABBITMQ_HOST=rabbitmq
     depends_on:
       - discovery
       - mysql_base_td6_auth
+      - rabbitmq
+
+
 
   gateway:
     image: forum-microservices/api-gateway
@@ -58,12 +64,24 @@ services:
       MYSQL_PASSWORD: passwordtd6
       MYSQL_DATABASE: basetd6auth
 
-#  mysql_base_td6_forum:
-#    image: mysql:latest
-#    ports:
-#      - "3308:3306"
-#    environment:
-#      MYSQL_ROOT_PASSWORD: passwordtd6
-#      MYSQL_USER: usertd6
-#      MYSQL_PASSWORD: passwordtd6
-#      MYSQL_DATABASE: basetd6forum
+  mysql_base_td6_forum:
+    image: mysql:latest
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: passwordtd6
+      MYSQL_USER: usertd6
+      MYSQL_PASSWORD: passwordtd6
+      MYSQL_DATABASE: basetd6forum
+
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: "rabbitmq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

@@ -28,8 +28,6 @@ public class Controleur {
 
     record LibelleQuestion(String libelleQuestion) {}
 
-    record UtilisateurDTO(long id, String email) {}
-
     @PreAuthorize("hasRole('ETUDIANT')")
     @PostMapping("/questions")
     public ResponseEntity<Question> ajouterQuestion(@RequestBody LibelleQuestion libelleQuestion,

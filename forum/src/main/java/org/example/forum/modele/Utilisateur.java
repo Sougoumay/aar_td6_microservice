@@ -1,5 +1,6 @@
 package org.example.forum.modele;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -15,7 +16,7 @@ public class Utilisateur {
 
     private String email;
 
-    @OneToMany(mappedBy = "utilisateur")
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
     private Set<Question> questions;
 
     public Utilisateur() {}

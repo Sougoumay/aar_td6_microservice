@@ -2,6 +2,7 @@ package org.example.authentification.facade;
 
 import org.apache.catalina.User;
 import org.example.authentification.controleur.dtos.LoginDTO;
+import org.example.authentification.controleur.dtos.RegisteredDTO;
 import org.example.authentification.controleur.dtos.UtilisateurDTO;
 import org.example.authentification.dao.UtilisateurRepository;
 import org.example.authentification.facade.exceptions.LoginDejaUtiliseException;
@@ -73,14 +74,16 @@ public class FacadeUtilisateurs {
     }
 
     @Transactional
-    public Utilisateur desinscription(long id) throws UtilisateurInexistantException {
+    public RegisteredDTO desinscription(long id) throws UtilisateurInexistantException {
         Utilisateur user = utilisateurRepository.findById(id).orElseThrow(UtilisateurInexistantException::new);
+
+        RegisteredDTO userRecord = new RegisteredDTO(user.getId(), user.getEmail());
 
         user.getRoles().size();
 
 
         utilisateurRepository.delete(user);
-        return user;
+        return userRecord;
     }
 
 }

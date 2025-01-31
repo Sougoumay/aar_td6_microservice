@@ -111,4 +111,8 @@ public class FacadeApplication {
         Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur).orElseThrow(() -> new UtilisateurInexistantException(idUtilisateur));
         return questionRepository.findByUtilisateurAndIdQuestion(utilisateur, idQuestion);
     }
+
+    public void deleteUser(long id) {
+        utilisateurRepository.deleteById(id);
+    }
 }
