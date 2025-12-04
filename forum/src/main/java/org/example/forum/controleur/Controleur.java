@@ -1,5 +1,6 @@
 package org.example.forum.controleur;
 
+import org.example.forum.dto.QuestionDTO;
 import org.example.forum.exceptions.UtilisateurInexistantException;
 import org.example.forum.facades.FacadeApplication;
 import org.example.forum.exceptions.QuestionInexistanteException;
@@ -30,17 +31,17 @@ public class Controleur {
 
     @PreAuthorize("hasRole('ETUDIANT')")
     @PostMapping("/questions")
-    public ResponseEntity<Question> ajouterQuestion(@RequestBody LibelleQuestion libelleQuestion,
-                                                    Authentication authentication,
-                                                    UriComponentsBuilder base) throws UtilisateurInexistantException {
+    public ResponseEntity<QuestionDTO> ajouterQuestion(@RequestBody LibelleQuestion libelleQuestion,
+                                                       Authentication authentication,
+                                                       UriComponentsBuilder base) throws UtilisateurInexistantException {
 
         long id = Long.parseLong(authentication.getName());
 
-        Question question = facadeApplication.ajouterUneQuestion(id, libelleQuestion.libelleQuestion);
+        QuestionDTO questionDTO = facadeApplication.ajouterUneQuestion(id, libelleQuestion.libelleQuestion);
         URI location = base.path("api/questions/{idQuestion}")
-                .buildAndExpand(question.getIdQuestion())
+                .buildAndExpand(questionDTO.idQuestion())
                 .toUri();
-        return ResponseEntity.created(location).body(question);
+        return ResponseEntity.created(location).body(questionDTO);
     }
 
     @PreAuthorize("hasRole('ENSEIGNANT')")

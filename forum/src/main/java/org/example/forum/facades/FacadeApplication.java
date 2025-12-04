@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.example.forum.dao.QuestionRepository;
 import org.example.forum.dao.UtilisateurRepository;
+import org.example.forum.dto.QuestionDTO;
 import org.example.forum.exceptions.UtilisateurInexistantException;
 import org.example.forum.exceptions.QuestionInexistanteException;
 import org.example.forum.modele.Question;
@@ -36,12 +37,14 @@ public class FacadeApplication {
      * Permet à un utilisateur de poser une question.
      */
     @Transactional
-    public Question ajouterUneQuestion(long idUtilisateur, String libelleQuestion) throws UtilisateurInexistantException {
+    public QuestionDTO ajouterUneQuestion(long idUtilisateur, String libelleQuestion) throws UtilisateurInexistantException {
 
         Utilisateur utilisateur = utilisateurRepository.findById(idUtilisateur).orElseThrow(() -> new UtilisateurInexistantException(idUtilisateur));
 
         Question question = new Question(utilisateur, libelleQuestion);
-        return questionRepository.save(question);
+        Question result = questionRepository.save(question);
+        QuestionDTO dto = new QuestionDTO(result.getIdQuestion(), result.getLibelleQuestion(), result.getReponse());
+        return dto;
     }
 
     /**
